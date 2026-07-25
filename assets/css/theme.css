@@ -1,0 +1,82 @@
+:root {
+  /* Colors — from reference dashboard */
+  --bg-primary: #0d0f14;
+  --bg-secondary: #111318;
+  --surface-card: #171a21;
+  --surface-hover: #1d212a;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  --accent-blue: #2f7bf5;
+  --accent-blue-soft: rgba(47, 123, 245, 0.15);
+  --accent-blue-gradient-top: rgba(47, 123, 245, 0.55);
+  --accent-blue-gradient-bottom: rgba(47, 123, 245, 0.02);
+
+  --success-green: #2ecc71;
+  --success-green-bg: rgba(46, 204, 113, 0.12);
+  --danger-red: #ff5c5c;
+  --danger-red-bg: rgba(255, 92, 92, 0.12);
+
+  --text-primary: #f2f4f8;
+  --text-secondary: #9aa1ae;
+  --text-muted: #666c7a;
+
+  /* Spacing / radius / shadow */
+  --radius-card: 18px;
+  --radius-pill: 999px;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+
+  /* Typography */
+  --font-main: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+body, .stApp {
+  background-color: var(--bg-primary) !important;
+  font-family: var(--font-main);
+  color: var(--text-primary);
+}
+
+/* Card base */
+.nova-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.nova-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  background: var(--surface-hover);
+}
+
+/* KPI delta badges */
+.delta-up {
+  color: var(--success-green);
+  background: var(--success-green-bg);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.delta-down {
+  color: var(--danger-red);
+  background: var(--danger-red-bg);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+  background-color: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* Hide Streamlit default chrome */
+#MainMenu, footer, header {visibility: hidden;}
