@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+venv/
+.env
+.streamlit/secrets.toml
+data/raw/*
+data/processed/*
+data/ml/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/ml/.gitkeep
