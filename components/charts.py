@@ -39,3 +39,18 @@ def bar_chart(x, y, orientation="v"):
     fig = go.Figure(go.Bar(x=x, y=y, orientation=orientation))
     fig.update_layout(template="nova", height=340)
     return fig
+
+def bar_chart_horizontal(x, y):
+    fig = go.Figure(go.Bar(x=x, y=y, orientation="h"))
+    fig.update_layout(template="nova", height=320)
+    return fig
+
+
+def state_bubble_map(states, values):
+    """
+    Simple bubble-style regional chart (state code on x-axis, revenue as bar height).
+    Avoids needing real lat/lon geocoding for a first pass — swap for scattergeo later if desired.
+    """
+    fig = go.Figure(go.Bar(x=states, y=values, marker_color="#2f7bf5"))
+    fig.update_layout(template="nova", height=320, xaxis_title="Region", yaxis_title="Revenue")
+    return fig

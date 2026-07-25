@@ -17,15 +17,15 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
         f"<span class='{delta_class}'>{arrow} {delta}</span>" if delta else ""
     )
 
-    html = f"""
-    <div class="nova-card" style="min-height:110px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="color:#9aa1ae; font-size:0.85rem;">{icon} {label}</span>
-        </div>
-        <div style="display:flex; align-items:baseline; gap:10px; margin-top:10px;">
-            <span id="{card_id}" style="font-size:1.8rem; font-weight:700;">{value}</span>
-            {delta_html}
-        </div>
-    </div>
-    """
+    html = (
+        f'<div class="nova-card" style="min-height:110px;">'
+        f'<div style="display:flex; justify-content:space-between; align-items:center;">'
+        f'<span style="color:#9aa1ae; font-size:0.85rem;">{icon} {label}</span>'
+        f'</div>'
+        f'<div style="display:flex; align-items:baseline; gap:10px; margin-top:10px;">'
+        f'<span id="{card_id}" style="font-size:1.8rem; font-weight:700;">{value}</span>'
+        f'{delta_html}'
+        f'</div>'
+        f'</div>'
+    )
     st.markdown(html, unsafe_allow_html=True)
