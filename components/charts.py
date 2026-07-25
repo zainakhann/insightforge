@@ -54,3 +54,32 @@ def state_bubble_map(states, values):
     fig = go.Figure(go.Bar(x=states, y=values, marker_color="#2f7bf5"))
     fig.update_layout(template="nova", height=320, xaxis_title="Region", yaxis_title="Revenue")
     return fig
+
+def heatmap_chart(x_labels, y_labels, z_matrix, colorscale="Blues"):
+    fig = go.Figure(data=go.Heatmap(
+        x=x_labels, y=y_labels, z=z_matrix,
+        colorscale=colorscale, showscale=True,
+    ))
+    fig.update_layout(template="nova", height=340)
+    return fig
+
+
+def treemap_chart(labels, parents, values):
+    fig = go.Figure(go.Treemap(
+        labels=labels, parents=parents, values=values,
+        marker=dict(colorscale="Blues"),
+    ))
+    fig.update_layout(template="nova", height=380, margin=dict(t=10, l=10, r=10, b=10))
+    return fig
+
+
+def scatter_chart(x, y, text=None, size=None):
+    fig = go.Figure(go.Scatter(
+        x=x, y=y, mode="markers", text=text,
+        marker=dict(
+            color="#2f7bf5", size=size if size is not None else 8,
+            opacity=0.7, line=dict(width=0),
+        ),
+    ))
+    fig.update_layout(template="nova", height=360)
+    return fig
