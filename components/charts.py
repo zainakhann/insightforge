@@ -112,3 +112,42 @@ def forecast_chart(historical_df, forecast_df, y_actual_label="Actual", y_foreca
 
     fig.update_layout(template="nova", height=400)
     return fig
+
+def anomaly_timeline_chart(daily_df):
+    fig = go.Figure()
+
+    normal = daily_df[~daily_df["is_anomaly"]]
+    anomalies = daily_df[daily_df["is_anomaly"]]
+
+    fig.add_trace(go.Scatter(
+        x=normal["date"], y=normal["revenue"], mode="lines",
+        name="Daily Revenue", line=dict(color="#2f7bf5", width=1.5),
+        opacity=0.7,
+    ))
+    fig.add_trace(go.Scatter(
+        x=anomalies["date"], y=anomalies["revenue"], mode="markers",
+        name="Anomaly", marker=dict(color="#ff5c5c", size=9, symbol="x"),
+    ))
+
+    fig.update_layout(template="nova", height=360)
+    return fig
+
+
+def segment_scatter_chart(rfm_df):
+    color_map = {"VIP": "#2ecc71", "Loyal": "#2f7bf5", "At Risk": "#ff5c5c", "New": "#f5a623"}
+    fig = go.Figure()
+
+    for segment, color in color_map.items():
+        seg_data = rfm_df[rfm_df["segment"] == segment]
+        if seg_data.empty:
+            continue
+        fig.add_trace(go.Scatter(
+            x=seg_data["frequency"], y=seg_data["monetary"], mode="markers",
+            name=segment, marker=dict(color=color, size=6, opacity=0.6),
+        ))
+
+    fig.update_layout(
+        template="nova", height=380,
+        xaxis_title="Order Frequency", yaxis_title="Total Spend ($)",
+    )
+    return fig

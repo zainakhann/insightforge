@@ -4,6 +4,8 @@ from components.cards import insight_card
 from utils.dashboard_data import load_orders
 from utils.insights_data import generate_all_insights, compute_confidence
 from utils.ai_narrative import generate_narrative
+from utils.ml_cache import cached_segments, cached_anomalies
+from components.charts import segment_scatter_chart, anomaly_timeline_chart
 
 render_navbar()
 st.markdown("## AI Insights")
@@ -58,20 +60,37 @@ for insight in insights:
 
 st.markdown("---")
 
-# ---------- SEGMENTATION (stub — wired in Phase 7) ----------
+# ---------- SEGMENTATION ----------
 st.markdown("#### Customer Segmentation")
-st.markdown(
-    '<div class="nova-card" style="color:var(--text-secondary);">'
-    '🔒 Segmentation model not yet built — wired in Phase 7 (customer_segmentation.py).'
-    '</div>',
-    unsafe_allow_html=True,
-)
+rfm, summary = cached_segments(df)
 
-# ---------- ANOMALY DETECTION (stub — wired in Phase 7) ----------
+c1, c2 = st.columns([1, 1])
+with c1:
+    st.plotly_chart(segment_scatter_chart(rfm), use_container_width=True, key="segmentation_scatter")
+with c2:
+    display_summary = summary.copy()
+    display_summary["avg_spend"] = display_summary["avg_spend"].apply(lambda v: f"${v:,.0f}")
+    display_summary["total_revenue"] = display_summary["total_revenue"].apply(lambda v: f"${v:,.0f}")
+    display_summary["avg_recency_days"] = display_summary["avg_recency_days"].round(0).astype(int)
+    display_summary["avg_orders"] = display_summary["avg_orders"].round(1)
+    display_summary.columns = ["Segment", "Customers", "Avg Days Since Order", "Avg Orders", "Avg Spend", "Total Revenue"]
+    st.dataframe(display_summary, use_container_width=True, hide_index=True)
+
+top_segment = summary.iloc[0]["segment"]
+st.caption(f"{top_segment} customers drive the largest share of total revenue — prioritize retention efforts here.")
+
+# ---------- ANOMALY DETECTION ----------
 st.markdown("#### Anomaly Detection")
-st.markdown(
-    '<div class="nova-card" style="color:var(--text-secondary);">'
-    '🔒 Anomaly detection model not yet built — wired in Phase 7 (anomaly_detection.py).'
-    '</div>',
-    unsafe_allow_html=True,
-)
+daily, anomalies = cached_anomalies(df)
+
+st.plotly_chart(anomaly_timeline_chart(daily), use_container_width=True, key="anomaly_timeline")
+
+if len(anomalies) > 0:
+    st.caption(f"{len(anomalies)} anomalous days detected out of {len(daily)} total days in the dataset.")
+    display_anomalies = anomalies[["date", "revenue", "orders"]].head(10).copy()
+    display_anomalies["date"] = display_anomalies["date"].dt.strftime("%b %d, %Y")
+    display_anomalies["revenue"] = display_anomalies["revenue"].apply(lambda v: f"${v:,.0f}")
+    display_anomalies.columns = ["Date", "Revenue", "Orders"]
+    st.dataframe(display_anomalies, use_container_width=True, hide_index=True)
+else:
+    st.caption("No significant anomalies detected in the current data.")
