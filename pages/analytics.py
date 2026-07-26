@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import plotly.graph_objects as go
 from components.navbar import render_navbar
 from components.filters import render_global_filters, apply_filters
 from components.charts import (
@@ -15,6 +16,8 @@ from utils.analytics_data import (
     review_score_distribution, review_score_trend,
     sales_by_region, delivery_time_by_region,
 )
+from utils.dashboard_data import regional_sales_geo
+from components.charts import geo_scatter_chart
 
 render_navbar()
 st.markdown("## Analytics")
@@ -48,17 +51,17 @@ with tab_sales:
         st.markdown("##### Revenue Over Time")
         trend = revenue_over_time(df)
         st.plotly_chart(area_chart(trend["order_month"], trend["payment_value"]),
-                          use_container_width=True, key="sales_revenue_trend")
+                          width='stretch', key="sales_revenue_trend")
     with c2:
         st.markdown("##### Sales by Category")
         cat = sales_by_category(df)
         st.plotly_chart(donut_chart(cat["nova_category"], cat["payment_value"]),
-                          use_container_width=True, key="sales_category_donut")
+                          width='stretch', key="sales_category_donut")
 
     st.markdown("##### Order Volume — Day × Hour")
     hours, days, z = order_volume_heatmap(df)
     st.plotly_chart(heatmap_chart(hours, days, z),
-                      use_container_width=True, key="sales_volume_heatmap")
+                      width='stretch', key="sales_volume_heatmap")
 
 # ---------- CUSTOMERS ----------
 with tab_customers:
@@ -66,18 +69,24 @@ with tab_customers:
     with c1:
         st.markdown("##### New vs Returning Customers")
         nvr = new_vs_returning(df)
-        new_df = nvr[nvr["customer_type"] == "New"]
-        st.plotly_chart(bar_chart(new_df["order_month"], new_df["order_id"]),
-                          use_container_width=True, key="customers_new_bar")
-        st.caption("New customers by month shown above. Returning-customer overlay refinement is a Phase 10 polish item.")
+        pivot = nvr.pivot(index="order_month", columns="customer_type", values="order_id").fillna(0).reset_index()
+
+        fig = go.Figure()
+        if "New" in pivot.columns:
+            fig.add_trace(go.Bar(x=pivot["order_month"], y=pivot["New"], name="New", marker_color="#2f7bf5"))
+        if "Returning" in pivot.columns:
+            fig.add_trace(go.Bar(x=pivot["order_month"], y=pivot["Returning"], name="Returning", marker_color="#2ecc71"))
+        fig.update_layout(template="nova", height=340, barmode="stack")
+
+        st.plotly_chart(fig, width='stretch', key="customers_new_vs_returning")
     with c2:
         st.markdown("##### Customer Lifetime Value Distribution")
         ltv = customer_ltv_distribution(df)
         st.plotly_chart(scatter_chart(ltv["order_count"], ltv["total_spent"]),
-                          use_container_width=True, key="customers_ltv_scatter")
+                          width='stretch', key="customers_ltv_scatter")
 
     st.markdown("##### Customer Table")
-    st.dataframe(customer_table(df), use_container_width=True, hide_index=True)
+    st.dataframe(customer_table(df), width='stretch', hide_index=True)
 
 # ---------- PRODUCTS ----------
 with tab_products:
@@ -86,19 +95,19 @@ with tab_products:
         st.markdown("##### Top Performing Categories")
         top, bottom = top_bottom_categories(df)
         st.plotly_chart(bar_chart_horizontal(top["payment_value"], top["nova_category"]),
-                          use_container_width=True, key="products_top_categories")
+                          width='stretch', key="products_top_categories")
     with c2:
         st.markdown("##### Bottom Performing Categories")
         st.plotly_chart(bar_chart_horizontal(bottom["payment_value"], bottom["nova_category"]),
-                          use_container_width=True, key="products_bottom_categories")
+                          width='stretch', key="products_bottom_categories")
 
     st.markdown("##### Category Breakdown (Treemap)")
     labels, parents, values = category_treemap_data(df)
     st.plotly_chart(treemap_chart(labels, parents, values),
-                      use_container_width=True, key="products_treemap")
+                      width='stretch', key="products_treemap")
 
     st.markdown("##### Product Table")
-    st.dataframe(product_table(df), use_container_width=True, hide_index=True)
+    st.dataframe(product_table(df), width='stretch', hide_index=True)
 
 # ---------- PAYMENTS ----------
 with tab_payments:
@@ -107,12 +116,12 @@ with tab_payments:
         st.markdown("##### Payment Method Breakdown")
         pm = payment_method_breakdown(df)
         st.plotly_chart(donut_chart(pm["payment_type"], pm["orders"]),
-                          use_container_width=True, key="payments_method_donut")
+                          width='stretch', key="payments_method_donut")
     with c2:
         st.markdown("##### Installments Analysis")
         inst = installments_breakdown(df)
         st.plotly_chart(bar_chart(inst["payment_installments"], inst["orders"]),
-                          use_container_width=True, key="payments_installments_bar")
+                          width='stretch', key="payments_installments_bar")
 
 # ---------- REVIEWS ----------
 with tab_reviews:
@@ -121,23 +130,26 @@ with tab_reviews:
         st.markdown("##### Review Score Distribution")
         dist = review_score_distribution(df, reviews)
         st.plotly_chart(bar_chart(dist["review_score"], dist["count"]),
-                          use_container_width=True, key="reviews_score_bar")
+                          width='stretch', key="reviews_score_bar")
     with c2:
         st.markdown("##### Review Score Trend")
         trend2 = review_score_trend(df, reviews)
         st.plotly_chart(area_chart(trend2["order_month"], trend2["review_score"], "Avg Score"),
-                          use_container_width=True, key="reviews_score_trend")
+                          width='stretch', key="reviews_score_trend")
 
 # ---------- GEOGRAPHY ----------
 with tab_geo:
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("##### Sales by Region")
-        region = sales_by_region(df).head(15)
-        st.plotly_chart(bar_chart_horizontal(region["payment_value"], region["customer_state"]),
-                          use_container_width=True, key="geo_sales_by_region")
+        st.markdown("##### Sales by Region (Map)")
+        region_geo = regional_sales_geo(df)
+        hover_text = [f"{row.customer_state}: ${row.payment_value:,.0f}" for row in region_geo.itertuples()]
+        st.plotly_chart(
+            geo_scatter_chart(region_geo["lat"], region_geo["lon"], region_geo["payment_value"], hover_text),
+            width='stretch', key="geo_sales_map",
+        )
     with c2:
         st.markdown("##### Avg Delivery Time by Region")
         delivery = delivery_time_by_region(df).head(15)
         st.plotly_chart(bar_chart_horizontal(delivery["delivery_days"], delivery["customer_state"]),
-                          use_container_width=True, key="geo_delivery_by_region")
+                          width='stretch', key="geo_delivery_by_region")

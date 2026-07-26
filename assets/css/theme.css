@@ -80,3 +80,44 @@ section[data-testid="stSidebar"] {
 
 /* Hide Streamlit default chrome */
 #MainMenu, footer, header {visibility: hidden;}
+
+/* Consistent spacing between markdown headers and content below them */
+h4, h5 {
+  margin-top: 0.4rem !important;
+  margin-bottom: 0.6rem !important;
+}
+
+/* Consistent card spacing when stacked */
+.nova-card + .nova-card {
+  margin-top: 8px;
+}
+
+/* Smooth transitions on all interactive elements, not just cards */
+button, [data-testid="stDataFrame"], .stSelectbox, .stMultiSelect {
+  transition: all 0.15s ease;
+}
+
+/* Tab styling to match dark theme more precisely */
+button[data-baseweb="tab"] {
+  color: var(--text-secondary) !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--accent-blue) !important;
+}
+
+/* Consistent scrollbar styling for dataframes (dark, not default browser gray) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: #333944;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444b58;
+}

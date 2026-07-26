@@ -21,7 +21,7 @@ with tab_revenue:
 
         st.plotly_chart(
             forecast_chart(historical, forecast, "Historical Revenue", "Forecasted Revenue"),
-            use_container_width=True, key="revenue_forecast_chart",
+            width='stretch', key="revenue_forecast_chart",
         )
 
         m1, m2, m3 = st.columns(3)
@@ -54,7 +54,7 @@ with tab_sales:
 
         st.plotly_chart(
             forecast_chart(historical, forecast, f"Historical {category} Orders", f"Forecasted {category} Orders"),
-            use_container_width=True, key="sales_forecast_chart",
+            width='stretch', key="sales_forecast_chart",
         )
 
         m1, m2, m3 = st.columns(3)

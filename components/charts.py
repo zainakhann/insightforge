@@ -151,3 +151,25 @@ def segment_scatter_chart(rfm_df):
         xaxis_title="Order Frequency", yaxis_title="Total Spend ($)",
     )
     return fig
+
+def geo_scatter_chart(lat, lon, size, hover_labels):
+    fig = go.Figure(go.Scattergeo(
+        lat=lat, lon=lon,
+        text=hover_labels,
+        marker=dict(
+            size=size, sizemode="area",
+            sizeref=2. * max(size) / (40. ** 2),
+            color="#2f7bf5", opacity=0.75,
+            line=dict(width=1, color="#f2f4f8"),
+        ),
+        mode="markers",
+    ))
+    fig.update_geos(
+        scope="south america",
+        showland=True, landcolor="#1d212a",
+        showocean=True, oceancolor="#0d0f14",
+        showcountries=True, countrycolor="#333944",
+        bgcolor="rgba(0,0,0,0)",
+    )
+    fig.update_layout(template="nova", height=380, margin=dict(l=0, r=0, t=10, b=0))
+    return fig

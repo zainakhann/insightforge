@@ -1,7 +1,5 @@
 """
 Cached data access + aggregation functions for the Dashboard page.
-All functions take the already-loaded orders_master DataFrame and return
-small, chart-ready DataFrames so pages stay thin.
 """
 
 import pandas as pd
@@ -20,12 +18,6 @@ def load_orders() -> pd.DataFrame:
 
 
 def _trim_incomplete_tail(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Olist's raw data trails off into a near-empty final month (data collection
-    cutoff, not a real business decline). Drop trailing months whose order
-    volume is far below the typical month so KPIs/growth aren't distorted
-    by an artifact of the source data.
-    """
     monthly_counts = df.groupby("order_month")["order_id"].nunique().sort_index()
     if len(monthly_counts) < 3:
         return df
@@ -42,6 +34,17 @@ def load_geo() -> pd.DataFrame:
     return pd.read_parquet(PROCESSED_DIR / "geo_master.parquet")
 
 
+def satisfaction_score(df: pd.DataFrame, reviews_path: str = "data/processed/reviews_master.parquet") -> float:
+    reviews = pd.read_parquet(reviews_path)
+    merged = df[["order_id"]].drop_duplicates().merge(
+        reviews[["order_id", "review_score"]], on="order_id", how="inner"
+    )
+    if merged.empty:
+        return None
+    avg_score = merged["review_score"].mean()
+    return round((avg_score / 5) * 100, 1)
+
+
 def compute_kpis(df: pd.DataFrame) -> dict:
     completed = df[df["order_status"] != "canceled"]
 
@@ -49,9 +52,8 @@ def compute_kpis(df: pd.DataFrame) -> dict:
     orders = completed["order_id"].nunique()
     customers = completed["customer_unique_id"].nunique()
     profit = completed["profit_estimate"].sum()
-    satisfaction = None  # wired from reviews in Step 3.x if desired later
+    satisfaction = satisfaction_score(completed)
 
-    # Growth: compare last full month vs prior full month
     monthly_rev = completed.groupby("order_month")["payment_value"].sum().sort_index()
     if len(monthly_rev) >= 2:
         growth = (monthly_rev.iloc[-1] - monthly_rev.iloc[-2]) / monthly_rev.iloc[-2] * 100
@@ -64,38 +66,59 @@ def compute_kpis(df: pd.DataFrame) -> dict:
         "customers": customers,
         "profit": profit,
         "growth": growth,
+        "satisfaction": satisfaction,
     }
+
+
+def compute_kpi_deltas(df: pd.DataFrame) -> dict:
+    completed = df[df["order_status"] != "canceled"]
+    monthly = completed.groupby("order_month").agg(
+        orders=("order_id", "nunique"),
+        customers=("customer_unique_id", "nunique"),
+        profit=("profit_estimate", "sum"),
+    ).sort_index()
+
+    if len(monthly) < 2:
+        return {"orders": 0, "customers": 0, "profit": 0}
+
+    deltas = {}
+    for col in ["orders", "customers", "profit"]:
+        last, prev = monthly[col].iloc[-1], monthly[col].iloc[-2]
+        deltas[col] = (last - prev) / prev * 100 if prev else 0
+    return deltas
 
 
 def revenue_trend(df: pd.DataFrame) -> pd.DataFrame:
     completed = df[df["order_status"] != "canceled"]
-    trend = (
+    return (
         completed.groupby("order_month")["payment_value"]
-        .sum()
-        .reset_index()
-        .sort_values("order_month")
+        .sum().reset_index().sort_values("order_month")
     )
-    return trend
 
 
 def sales_by_category(df: pd.DataFrame) -> pd.DataFrame:
     completed = df[df["order_status"] != "canceled"]
     return (
         completed.groupby("nova_category")["payment_value"]
-        .sum()
-        .reset_index()
-        .sort_values("payment_value", ascending=False)
+        .sum().reset_index().sort_values("payment_value", ascending=False)
     )
 
 
-def regional_sales(df: pd.DataFrame) -> pd.DataFrame:
+def regional_sales_geo(df: pd.DataFrame, geo_path: str = "data/processed/geo_master.parquet") -> pd.DataFrame:
+    """
+    Joins sales-by-state with real average lat/lon per state so we can plot
+    an actual map instead of a bar chart.
+    """
+    geo = pd.read_parquet(geo_path)
+    state_coords = geo.groupby("geolocation_state").agg(
+        lat=("geolocation_lat", "mean"),
+        lon=("geolocation_lng", "mean"),
+    ).reset_index().rename(columns={"geolocation_state": "customer_state"})
+
     completed = df[df["order_status"] != "canceled"]
-    return (
-        completed.groupby("customer_state")["payment_value"]
-        .sum()
-        .reset_index()
-        .sort_values("payment_value", ascending=False)
-    )
+    sales = completed.groupby("customer_state")["payment_value"].sum().reset_index()
+
+    return sales.merge(state_coords, on="customer_state", how="inner")
 
 
 def customer_growth(df: pd.DataFrame) -> pd.DataFrame:
@@ -125,20 +148,16 @@ def top_products(df: pd.DataFrame, n: int = 5) -> pd.DataFrame:
     top = (
         completed.groupby("nova_category")
         .agg(revenue=("payment_value", "sum"), units=("order_item_id", "count"))
-        .reset_index()
-        .sort_values("revenue", ascending=False)
-        .head(n)
+        .reset_index().sort_values("revenue", ascending=False).head(n)
     )
     top["revenue"] = top["revenue"].apply(lambda v: f"${v:,.0f}")
     return top
 
 
 def generate_alerts(df: pd.DataFrame) -> list:
-    """Simple threshold-based alerts — real logic, not decorative."""
     alerts = []
     completed = df[df["order_status"] != "canceled"]
 
-    # Delivery delay trend by region
     delayed = completed.groupby("customer_state")["is_delayed"].mean().sort_values(ascending=False)
     if len(delayed) > 0 and delayed.iloc[0] > 0.15:
         alerts.append({
@@ -146,7 +165,6 @@ def generate_alerts(df: pd.DataFrame) -> list:
             "text": f"Delivery delays elevated in {delayed.index[0]} — {delayed.iloc[0]*100:.0f}% of orders late.",
         })
 
-    # Revenue trend direction
     trend = revenue_trend(df)
     if len(trend) >= 2:
         last, prev = trend["payment_value"].iloc[-1], trend["payment_value"].iloc[-2]
@@ -156,7 +174,6 @@ def generate_alerts(df: pd.DataFrame) -> list:
         else:
             alerts.append({"type": "warning", "text": f"Revenue declined {abs(pct):.1f}% month-over-month."})
 
-    # Fastest-growing category
     cat_trend = completed.groupby(["order_month", "nova_category"])["payment_value"].sum().reset_index()
     if not cat_trend.empty:
         months = sorted(cat_trend["order_month"].unique())

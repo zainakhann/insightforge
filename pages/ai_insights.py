@@ -66,7 +66,7 @@ rfm, summary = cached_segments(df)
 
 c1, c2 = st.columns([1, 1])
 with c1:
-    st.plotly_chart(segment_scatter_chart(rfm), use_container_width=True, key="segmentation_scatter")
+    st.plotly_chart(segment_scatter_chart(rfm), width='stretch', key="segmentation_scatter")
 with c2:
     display_summary = summary.copy()
     display_summary["avg_spend"] = display_summary["avg_spend"].apply(lambda v: f"${v:,.0f}")
@@ -74,7 +74,7 @@ with c2:
     display_summary["avg_recency_days"] = display_summary["avg_recency_days"].round(0).astype(int)
     display_summary["avg_orders"] = display_summary["avg_orders"].round(1)
     display_summary.columns = ["Segment", "Customers", "Avg Days Since Order", "Avg Orders", "Avg Spend", "Total Revenue"]
-    st.dataframe(display_summary, use_container_width=True, hide_index=True)
+    st.dataframe(display_summary, width='stretch', hide_index=True)
 
 top_segment = summary.iloc[0]["segment"]
 st.caption(f"{top_segment} customers drive the largest share of total revenue â€” prioritize retention efforts here.")
@@ -83,7 +83,7 @@ st.caption(f"{top_segment} customers drive the largest share of total revenue â€
 st.markdown("#### Anomaly Detection")
 daily, anomalies = cached_anomalies(df)
 
-st.plotly_chart(anomaly_timeline_chart(daily), use_container_width=True, key="anomaly_timeline")
+st.plotly_chart(anomaly_timeline_chart(daily), width='stretch', key="anomaly_timeline")
 
 if len(anomalies) > 0:
     st.caption(f"{len(anomalies)} anomalous days detected out of {len(daily)} total days in the dataset.")
@@ -91,6 +91,6 @@ if len(anomalies) > 0:
     display_anomalies["date"] = display_anomalies["date"].dt.strftime("%b %d, %Y")
     display_anomalies["revenue"] = display_anomalies["revenue"].apply(lambda v: f"${v:,.0f}")
     display_anomalies.columns = ["Date", "Revenue", "Orders"]
-    st.dataframe(display_anomalies, use_container_width=True, hide_index=True)
+    st.dataframe(display_anomalies, width='stretch', hide_index=True)
 else:
     st.caption("No significant anomalies detected in the current data.")
