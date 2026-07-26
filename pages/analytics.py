@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 from components.navbar import render_navbar
 from components.filters import render_global_filters, apply_filters
@@ -23,7 +24,10 @@ df_all = load_orders()
 reviews = load_reviews()
 
 st.markdown("#### Filters")
-filters = render_global_filters(df_all)
+
+default_months = st.session_state.get("settings_default_range_months", 24)
+filters = render_global_filters(df_all, default_months_back=default_months)
+st.caption(f"Date range defaults to the last {default_months} months, per your Settings preference — adjust anytime below.")
 df = apply_filters(df_all, filters)
 
 if df.empty:

@@ -2,11 +2,15 @@ import streamlit as st
 import datetime
 
 
-def render_global_filters(df):
+def render_global_filters(df, default_months_back: int = None):
     """
     Builds the filter bar using real values pulled from the data itself,
     so options always match what actually exists (no stale hardcoded lists).
+    `default_months_back` (from Settings) controls the initial date range shown —
+    None means "full range" (the original behavior).
     """
+    import pandas as pd
+
     min_date = df["order_purchase_timestamp"].min().date()
     max_date = df["order_purchase_timestamp"].max().date()
     states = sorted(df["customer_state"].dropna().unique().tolist())
@@ -14,9 +18,15 @@ def render_global_filters(df):
     payment_methods = sorted(df["payment_type"].dropna().unique().tolist())
     statuses = sorted(df["order_status"].dropna().unique().tolist())
 
+    if default_months_back:
+        suggested_start = (pd.Timestamp(max_date) - pd.DateOffset(months=default_months_back)).date()
+        default_start = max(suggested_start, min_date)
+    else:
+        default_start = min_date
+
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        date_range = st.date_input("Date range", value=(min_date, max_date),
+        date_range = st.date_input("Date range", value=(default_start, max_date),
                                      min_value=min_date, max_value=max_date)
     with col2:
         region = st.multiselect("Region", options=states, placeholder="All regions")
