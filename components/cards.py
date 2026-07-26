@@ -29,3 +29,21 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
         f'</div>'
     )
     st.markdown(html, unsafe_allow_html=True)
+
+def insight_card(title: str, text: str, insight_type: str = "info"):
+    icon_map = {"success": "✅", "warning": "⚠️", "info": "✨"}
+    color_map = {
+        "success": "var(--success-green)",
+        "warning": "var(--danger-red)",
+        "info": "var(--accent-blue)",
+    }
+    icon = icon_map.get(insight_type, "✨")
+    color = color_map.get(insight_type, "var(--accent-blue)")
+
+    html = (
+        f'<div class="nova-card" style="border-left: 3px solid {color}; margin-bottom:12px;">'
+        f'<div style="font-weight:600; margin-bottom:4px;">{icon} {title}</div>'
+        f'<div style="color:var(--text-secondary); font-size:0.9rem;">{text}</div>'
+        f'</div>'
+    )
+    st.markdown(html, unsafe_allow_html=True)
