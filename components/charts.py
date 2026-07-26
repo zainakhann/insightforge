@@ -83,3 +83,32 @@ def scatter_chart(x, y, text=None, size=None):
     ))
     fig.update_layout(template="nova", height=360)
     return fig
+
+def forecast_chart(historical_df, forecast_df, y_actual_label="Actual", y_forecast_label="Forecast"):
+    fig = go.Figure()
+
+    # Historical line
+    fig.add_trace(go.Scatter(
+        x=historical_df["date"], y=historical_df["actual"],
+        mode="lines", name=y_actual_label,
+        line=dict(color="#2f7bf5", width=3),
+    ))
+
+    # Confidence band (fill between lower/upper)
+    fig.add_trace(go.Scatter(
+        x=list(forecast_df["date"]) + list(forecast_df["date"][::-1]),
+        y=list(forecast_df["upper"]) + list(forecast_df["lower"][::-1]),
+        fill="toself", fillcolor="rgba(46,204,113,0.15)",
+        line=dict(color="rgba(0,0,0,0)"), name="Confidence Interval",
+        showlegend=True, hoverinfo="skip",
+    ))
+
+    # Forecast line
+    fig.add_trace(go.Scatter(
+        x=forecast_df["date"], y=forecast_df["forecast"],
+        mode="lines+markers", name=y_forecast_label,
+        line=dict(color="#2ecc71", width=3, dash="dash"),
+    ))
+
+    fig.update_layout(template="nova", height=400)
+    return fig
