@@ -19,8 +19,9 @@ def prepare_monthly_series(df: pd.DataFrame) -> pd.Series:
 
 def fit_and_forecast(series: pd.Series, horizon_months: int = 6):
     """
-    Fits on all but the last 3 months (holdout), scores against that holdout,
-    then refits on the full series and forecasts forward `horizon_months`.
+    Fits with a damped additive trend so growth assumptions taper instead of
+    extrapolating linearly forever. Evaluates on a 3-month holdout, then
+    refits on full history for the forward-looking forecast.
     """
     if len(series) < 8:
         raise ValueError("Not enough history to forecast reliably (need 8+ months).")
@@ -29,7 +30,6 @@ def fit_and_forecast(series: pd.Series, horizon_months: int = 6):
     train = series.iloc[:-holdout_n]
     test = series.iloc[-holdout_n:]
 
-    # Fit on training portion, evaluate against real holdout
     model_eval = ExponentialSmoothing(
         train, trend="add", damped_trend=True, seasonal=None, initialization_method="estimated"
     ).fit()
@@ -41,13 +41,11 @@ def fit_and_forecast(series: pd.Series, horizon_months: int = 6):
         "MAPE": mean_absolute_percentage_error(test, preds_eval) * 100,
     }
 
-    # Refit on full series for the real forward-looking forecast
     model_full = ExponentialSmoothing(
         series, trend="add", damped_trend=True, seasonal=None, initialization_method="estimated"
     ).fit()
     forecast = model_full.forecast(horizon_months)
 
-    # Simple confidence band: ± 1.96 * residual std (95% approx)
     residuals = model_full.fittedvalues - series
     resid_std = residuals.std()
     lower = forecast - 1.96 * resid_std
@@ -61,7 +59,6 @@ def fit_and_forecast(series: pd.Series, horizon_months: int = 6):
     })
 
     return forecast_df, metrics
-
 
 def get_revenue_forecast(df: pd.DataFrame, horizon_months: int = 6):
     series = prepare_monthly_series(df)

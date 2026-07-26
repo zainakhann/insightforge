@@ -21,36 +21,41 @@ def fit_and_forecast(series: pd.Series, horizon_months: int = 6):
     if len(series) < 8:
         raise ValueError("Not enough history to forecast reliably (need 8+ months).")
 
+    # Order counts can legitimately be 0 in a slow month — add 1 before logging
+    # (a standard log1p-style trick) then subtract 1 back out after exponentiating.
+    log_series = np.log1p(series)
+
     holdout_n = 3
-    train = series.iloc[:-holdout_n]
-    test = series.iloc[-holdout_n:]
+    train = log_series.iloc[:-holdout_n]
+    test_actual = series.iloc[-holdout_n:]
 
     model_eval = ExponentialSmoothing(
         train, trend="add", damped_trend=True, seasonal=None, initialization_method="estimated"
     ).fit()
-    preds_eval = model_eval.forecast(holdout_n)
+    preds_eval_log = model_eval.forecast(holdout_n)
+    preds_eval = np.expm1(preds_eval_log).clip(lower=0)
 
     metrics = {
-        "MAE": mean_absolute_error(test, preds_eval),
-        "RMSE": np.sqrt(mean_squared_error(test, preds_eval)),
-        "MAPE": mean_absolute_percentage_error(test, preds_eval) * 100,
+        "MAE": mean_absolute_error(test_actual, preds_eval),
+        "RMSE": np.sqrt(mean_squared_error(test_actual, preds_eval)),
+        "MAPE": mean_absolute_percentage_error(test_actual, preds_eval) * 100,
     }
 
     model_full = ExponentialSmoothing(
-        series, trend="add", damped_trend=True, seasonal=None, initialization_method="estimated"
+        log_series, trend="add", damped_trend=True, seasonal=None, initialization_method="estimated"
     ).fit()
-    forecast = model_full.forecast(horizon_months)
+    forecast_log = model_full.forecast(horizon_months)
 
-    residuals = model_full.fittedvalues - series
-    resid_std = residuals.std()
-    lower = (forecast - 1.96 * resid_std).clip(lower=0)  # can't have negative order counts
-    upper = forecast + 1.96 * resid_std
+    residuals_log = model_full.fittedvalues - log_series
+    resid_std_log = residuals_log.std()
+    lower_log = forecast_log - 1.96 * resid_std_log
+    upper_log = forecast_log + 1.96 * resid_std_log
 
     forecast_df = pd.DataFrame({
-        "date": forecast.index,
-        "forecast": forecast.values,
-        "lower": lower.values,
-        "upper": upper.values,
+        "date": forecast_log.index,
+        "forecast": np.expm1(forecast_log.values).clip(min=0),
+        "lower": np.expm1(lower_log.values).clip(min=0),
+        "upper": np.expm1(upper_log.values).clip(min=0),
     })
 
     return forecast_df, metrics

@@ -30,6 +30,14 @@ with tab_revenue:
         m3.metric("MAPE", f"{metrics['MAPE']:.1f}%")
         st.caption("Metrics computed on a 3-month holdout before refitting on full history for the forecast shown above.")
 
+        if metrics["MAPE"] > 25:
+            st.info(
+                "⚠️ **Model accuracy note:** MAPE above 25% reflects real volatility in this "
+                "dataset's most recent months (a revenue dip and short history — under 2 years "
+                "of data) rather than a modeling error. Forecasts should be read directionally, "
+                "not as precise point predictions."
+            )
+
     except ValueError as e:
         st.warning(str(e))
 
