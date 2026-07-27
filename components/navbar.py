@@ -20,3 +20,4 @@ def render_navbar():
             "<span>James Smith</span></div>",
             unsafe_allow_html=True,
         )
+    st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)

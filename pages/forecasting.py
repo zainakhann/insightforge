@@ -19,10 +19,11 @@ with tab_revenue:
     try:
         historical, forecast, metrics = cached_revenue_forecast(df, horizon)
 
-        st.plotly_chart(
-            forecast_chart(historical, forecast, "Historical Revenue", "Forecasted Revenue"),
-            width='stretch', key="revenue_forecast_chart",
-        )
+        with st.container(border=True):
+            st.plotly_chart(
+                forecast_chart(historical, forecast, "Historical Revenue", "Forecasted Revenue"),
+                width='stretch', key="revenue_forecast_chart",
+            )
 
         m1, m2, m3 = st.columns(3)
         m1.metric("MAE", f"${metrics['MAE']:,.0f}")
@@ -52,10 +53,11 @@ with tab_sales:
     try:
         historical, forecast, metrics = cached_sales_forecast(df, category, horizon)
 
-        st.plotly_chart(
-            forecast_chart(historical, forecast, f"Historical {category} Orders", f"Forecasted {category} Orders"),
-            width='stretch', key="sales_forecast_chart",
-        )
+        with st.container(border=True):
+            st.plotly_chart(
+                forecast_chart(historical, forecast, f"Historical {category} Orders", f"Forecasted {category} Orders"),
+                width='stretch', key="sales_forecast_chart",
+            )
 
         m1, m2, m3 = st.columns(3)
         m1.metric("MAE", f"{metrics['MAE']:.1f} orders")

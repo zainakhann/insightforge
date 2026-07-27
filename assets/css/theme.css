@@ -1,8 +1,8 @@
 :root {
   /* Colors — from reference dashboard */
-  --bg-primary: #0d0f14;
-  --bg-secondary: #111318;
-  --surface-card: #171a21;
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --surface-card: #000000;
   --surface-hover: #1d212a;
   --border-subtle: rgba(255, 255, 255, 0.08);
 
@@ -120,4 +120,40 @@ button[data-baseweb="tab"][aria-selected="true"] {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #444b58;
+}
+
+/* Force all text white, background pitch black, per explicit instruction */
+body, .stApp, .stApp * {
+  color: #ffffff !important;
+}
+.stApp {
+  background-color: #000000 !important;
+}
+[data-testid="stSidebar"] {
+  background-color: #000000 !important;
+}
+[data-testid="stHeader"] {
+  background-color: #000000 !important;
+}
+.nova-card {
+  background-color: #000000 !important;
+  border: 1px solid #2a2a2a !important;
+}
+
+.block-container {
+  padding-top: 0.75rem !important;
+  padding-bottom: 2rem !important;
+}
+
+/* Force all text white on pitch-black background */
+body, .stApp, .stApp * {
+  color: #ffffff !important;
+}
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], [data-testid="stHeader"] {
+  background-color: #000000 !important;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+  border-color: rgba(255,255,255,0.15) !important;
+  border-radius: 14px !important;
 }

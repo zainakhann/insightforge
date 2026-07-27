@@ -43,54 +43,63 @@ st.markdown("<br>", unsafe_allow_html=True)
 # --- ROW: Revenue Trend + Sales by Category ---
 c1, c2 = st.columns([2, 1])
 with c1:
-    st.markdown("#### Revenue Trend")
-    trend = revenue_trend(df)
-    st.plotly_chart(area_chart(trend["order_month"], trend["payment_value"], "Revenue"),
-                      width='stretch', key="dash_revenue_trend")
+    with st.container(border=True):
+        st.markdown("#### Revenue Trend")
+        trend = revenue_trend(df)
+        st.plotly_chart(area_chart(trend["order_month"], trend["payment_value"], "Revenue"),
+                          width='stretch', key="dash_revenue_trend")
 with c2:
-    st.markdown("#### Sales by Category")
-    cat = sales_by_category(df)
-    st.plotly_chart(donut_chart(cat["nova_category"], cat["payment_value"]),
-                      width='stretch', key="dash_category_donut")
+    with st.container(border=True):
+        st.markdown("#### Sales by Category")
+        cat = sales_by_category(df)
+        st.plotly_chart(donut_chart(cat["nova_category"], cat["payment_value"]),
+                          width='stretch', key="dash_category_donut")
 
 # --- ROW: Regional Map + Customer Growth ---
 c3, c4 = st.columns(2)
 with c3:
-    st.markdown("#### Regional Performance")
-    region_geo = regional_sales_geo(df)
-    hover_text = [f"{row.customer_state}: ${row.payment_value:,.0f}" for row in region_geo.itertuples()]
-    st.plotly_chart(
-        geo_scatter_chart(region_geo["lat"], region_geo["lon"], region_geo["payment_value"], hover_text),
-        width='stretch', key="dash_regional_map",
-    )
+    with st.container(border=True):
+        st.markdown("#### Regional Performance")
+        region_geo = regional_sales_geo(df)
+        hover_text = [f"{row.customer_state}: ${row.payment_value:,.0f}" for row in region_geo.itertuples()]
+        st.plotly_chart(
+            geo_scatter_chart(region_geo["lat"], region_geo["lon"], region_geo["payment_value"], hover_text),
+            width='stretch', key="dash_regional_map",
+        )
 with c4:
-    st.markdown("#### Customer Growth")
-    growth = customer_growth(df)
-    st.plotly_chart(area_chart(growth["order_month"], growth["new_customers"], "New Customers"),
-                      width='stretch', key="dash_customer_growth")
+    with st.container(border=True):
+        st.markdown("#### Customer Growth")
+        growth = customer_growth(df)
+        st.plotly_chart(area_chart(growth["order_month"], growth["new_customers"], "New Customers"),
+                          width='stretch', key="dash_customer_growth")
 
 # --- ROW: Recent Transactions + Top Categories ---
 c5, c6 = st.columns([2, 1])
 with c5:
-    st.markdown("#### Recent Transactions")
-    st.dataframe(recent_transactions(df), width='stretch', hide_index=True)
+    with st.container(border=True):
+        st.markdown("#### Recent Transactions")
+        st.dataframe(recent_transactions(df), width='stretch', hide_index=True)
 with c6:
-    st.markdown("#### Top Categories")
-    st.dataframe(top_products(df), width='stretch', hide_index=True)
+    with st.container(border=True):
+        st.markdown("#### Top Categories")
+        st.dataframe(top_products(df), width='stretch', hide_index=True)
 
 # --- ROW: AI Summary + Alerts ---
 c7, c8 = st.columns(2)
 with c7:
-    st.markdown("#### AI Executive Summary")
-    st.markdown(
-        f'<div class="nova-card">Revenue is currently <b>${kpis["revenue"]:,.0f}</b> across '
-        f'<b>{kpis["orders"]:,}</b> orders and <b>{kpis["customers"]:,}</b> unique customers, '
-        f'with month-over-month growth of <b>{kpis["growth"]:.1f}%</b>. Estimated profit stands '
-        f'at <b>${kpis["profit"]:,.0f}</b>.</div>',
-        unsafe_allow_html=True,
-    )
+    with st.container(border=True):
+        st.markdown("#### AI Executive Summary")
+        st.markdown(
+            f'Revenue is currently <b>${kpis["revenue"]:,.0f}</b> across '
+            f'<b>{kpis["orders"]:,}</b> orders and <b>{kpis["customers"]:,}</b> unique customers, '
+            f'with month-over-month growth of <b>{kpis["growth"]:.1f}%</b>. Estimated profit stands '
+            f'at <b>${kpis["profit"]:,.0f}</b>.',
+            unsafe_allow_html=True,
+        )
 with c8:
-    st.markdown("#### Latest Alerts")
-    for alert in generate_alerts(df):
-        icon = {"warning": "⚠️", "success": "✅", "info": "ℹ️"}[alert["type"]]
-        st.markdown(f"<div class='nova-card' style='margin-bottom:8px;'>{icon} {alert['text']}</div>", unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("#### Latest Alerts")
+        for alert in generate_alerts(df):
+            icon = {"warning": "⚠️", "success": "✅", "info": "ℹ️"}[alert["type"]]
+            st.markdown(f"{icon} {alert['text']}")
+            st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)

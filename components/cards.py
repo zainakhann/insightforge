@@ -25,9 +25,9 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
     <html><head><style>
         html, body {{ margin:0; padding:0; overflow:hidden; background:transparent; }}
     </style></head><body>
-    <div style="font-family:Inter,Segoe UI,sans-serif; background:#171a21; border:1px solid rgba(255,255,255,0.08);
-                border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,0.35); padding:20px; box-sizing:border-box; min-height:110px;">
-        <div style="color:#9aa1ae; font-size:0.85rem;">{icon} {label}</div>
+    <div style="font-family:Inter,Segoe UI,sans-serif; background:#000000; border:1px solid rgba(255,255,255,0.15);
+                border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,0.35); padding:18px; box-sizing:border-box; min-height:120px;">
+        <div style="color:#ffffff; font-size:0.85rem; margin-bottom:4px; white-space:nowrap;">{icon} {label}</div>
         <div style="display:flex; align-items:baseline; gap:10px; margin-top:10px;">
             <span id="{card_id}" style="font-size:1.8rem; font-weight:700; color:#f2f4f8;">{prefix}0{suffix}</span>
             {delta_html}
@@ -57,7 +57,7 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
     </script>
     </body></html>
     """
-    st.iframe(html, height=130)
+    st.iframe(html, height=150)
 
 
 def insight_card(title: str, text: str, insight_type: str = "info"):
