@@ -17,6 +17,8 @@ insights = generate_all_insights(df)
 
 # ---------- AI NARRATIVE ----------
 narrative = generate_narrative(insights, st.session_state.get("_narrative_seed", 0))
+if not narrative and "_gemini_error" in st.session_state:
+    st.error(f"Debug: {st.session_state['_gemini_error']}")
 
 if narrative:
     top_col1, top_col2 = st.columns([5, 1])
@@ -34,10 +36,7 @@ if narrative:
             st.session_state["_narrative_seed"] = st.session_state.get("_narrative_seed", 0) + 1
             st.rerun()
 
-    narrative_key = f"typed_{st.session_state.get('_narrative_seed', 0)}"
-    already_typed = st.session_state.get(narrative_key, False)
-    typing_text(narrative, animate=not already_typed)
-    st.session_state[narrative_key] = True
+    typing_text(narrative)
 else:
     st.info(
         "AI narrative unavailable (no Gemini API key configured, or the request failed)."
