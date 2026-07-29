@@ -17,6 +17,8 @@ insights = generate_all_insights(df)
 
 # ---------- AI NARRATIVE ----------
 narrative = generate_narrative(insights, st.session_state.get("_narrative_seed", 0))
+if not narrative and "_gemini_error" in st.session_state:
+    st.error(f"Debug: {st.session_state['_gemini_error']}")
 
 if narrative:
     top_col1, top_col2 = st.columns([5, 1])
