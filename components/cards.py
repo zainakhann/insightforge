@@ -2,8 +2,16 @@ import streamlit as st
 import uuid
 import re
 
+ICON_MAP = {
+    "chart-line": "fa-chart-line",
+    "box": "fa-box",
+    "users": "fa-users",
+    "coins": "fa-coins",
+    "arrow-trend-up": "fa-arrow-trend-up",
+    "face-smile": "fa-face-smile",
+}
 
-def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = True, icon: str = "📌"):
+def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = True, icon: str = "chart-line"):
     card_id = f"kpi-{uuid.uuid4().hex[:8]}"
     delta_class_color = "#2ecc71" if delta_positive else "#ff5c5c"
     arrow = "▲" if delta_positive else "▼"
@@ -13,6 +21,8 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
         if delta else ""
     )
 
+    icon_class = ICON_MAP.get(icon, "fa-chart-line")
+
     match = re.match(r"^([^\d\-]*)([\d,\.\-]+)(.*)$", value)
     if match:
         prefix, number_str, suffix = match.groups()
@@ -21,15 +31,37 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
     else:
         prefix, target, suffix, decimals = value, 0, "", 0
 
+    icon_class = ICON_MAP.get(icon, "fa-chart-line")
+    
     html = f"""
-    <html><head><style>
+    <html>
+<head>
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+crossorigin="anonymous">
+<style>
         html, body {{ margin:0; padding:0; overflow:hidden; background:transparent; }}
     </style></head><body>
-    <div style="font-family:Inter,Segoe UI,sans-serif; background:#000000; border:1px solid rgba(255,255,255,0.15);
+    <div style="font-family:Inter,Segoe UI,sans-serif; background:#101319; border:1px solid rgba(255,255,255,0.15);
                 border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,0.35); padding:18px; box-sizing:border-box; min-height:120px;">
-        <div style="color:#ffffff; font-size:0.85rem; margin-bottom:4px; white-space:nowrap;">{icon} {label}</div>
+        <div style="color:#ffffff; font-size:0.85rem; margin-bottom:4px; white-space:nowrap;">
+    <span style="
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        width:28px;
+        height:28px;
+        border-radius:8px;
+        background:#0e1117;
+        margin-right:8px;
+        color:#2f7bf5;
+    ">
+        <i class="fa-solid fa-chart-line"></i>
+    </span>
+    {label}
+</div>
         <div style="display:flex; align-items:baseline; gap:10px; margin-top:10px;">
-            <span id="{card_id}" style="font-size:1.8rem; font-weight:700; color:#f2f4f8;">{prefix}0{suffix}</span>
+            <span id="{card_id}" style="font-size:1.45rem; font-weight:700; color:#f2f4f8;">{prefix}0{suffix}</span>
             {delta_html}
         </div>
     </div>
@@ -57,7 +89,7 @@ def kpi_card(label: str, value: str, delta: str = None, delta_positive: bool = T
     </script>
     </body></html>
     """
-    st.iframe(html, height=150)
+    st.iframe(html, height=130)
 
 
 def insight_card(title: str, text: str, insight_type: str = "info"):

@@ -2,6 +2,7 @@ import streamlit as st
 from datetime import datetime
 from components.navbar import render_navbar
 from components.charts import area_chart, donut_chart
+from components.page_layout import page_layout
 from utils.dashboard_data import load_orders, compute_kpis, revenue_trend, sales_by_category
 from utils.ml_cache import cached_segments
 from utils.insights_data import generate_all_insights
@@ -11,8 +12,10 @@ from utils.export_excel import build_excel_report
 from utils.export_pdf import build_pdf_report
 
 render_navbar()
-st.markdown("## Reports")
-st.caption("Export real Nova Commerce data as CSV, Excel, or PDF.")
+page_layout(
+    "Reports",
+    "Export real Nova Commerce data as CSV, Excel, or PDF."
+)
 
 df = load_orders()
 kpis = compute_kpis(df)

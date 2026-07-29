@@ -12,27 +12,33 @@ st.set_page_config(
 css_path = Path("assets/css/theme.css")
 st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
-# Sidebar logo, rendered above the nav menu
-with st.sidebar:
-    st.markdown(
-        "<div style='padding:8px 0 20px 0; font-weight:700; font-size:1.3rem;'>InsightForge</div>",
-        unsafe_allow_html=True,
-    )
 
-pages = {
-    "GENERAL": [
-        st.Page("pages/dashboard.py", title="Dashboard", icon="📊", default=True),
-    ],
-    "TOOLS": [
-        st.Page("pages/analytics.py", title="Analytics", icon="📈"),
-        st.Page("pages/forecasting.py", title="Forecasting", icon="🔮"),
-        st.Page("pages/ai_insights.py", title="AI Insights", icon="✨"),
-    ],
-    "SUPPORT": [
-        st.Page("pages/reports.py", title="Reports", icon="📄"),
-        st.Page("pages/settings.py", title="Settings", icon="⚙️"),
-    ],
-}
+
+pages = [
+    st.Page("pages/dashboard.py", title="Dashboard", default=True),
+    st.Page("pages/analytics.py", title="Analytics"),
+    st.Page("pages/forecasting.py", title="Forecasting"),
+    st.Page("pages/ai_insights.py", title="AI Insights"),
+    st.Page("pages/reports.py", title="Reports"),
+    st.Page("pages/settings.py", title="Settings"),
+]
 
 pg = st.navigation(pages)
 pg.run()
+
+
+# Sidebar footer — user account card
+st.sidebar.markdown("""
+    <div class="sidebar-footer">
+        <div class="sidebar-footer-user">
+            <div class="avatar-circle">J</div>
+            <div class="sidebar-footer-text">
+                <span class="sidebar-footer-name">James</span>
+                <span class="sidebar-footer-role">Admin</span>
+            </div>
+        </div>
+        <a href="/settings" target="_self" class="sidebar-footer-icon-link">
+            <div class="sidebar-footer-icon">⚙</div>
+        </a>
+    </div>
+""", unsafe_allow_html=True)

@@ -26,16 +26,21 @@ def render_global_filters(df, default_months_back: int = None):
 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
-        date_range = st.date_input("Date range", value=(default_start, max_date),
-                                     min_value=min_date, max_value=max_date)
+        with st.container(border=True):
+            date_range = st.date_input("Date range", value=(default_start, max_date),
+                                         min_value=min_date, max_value=max_date)
     with col2:
-        region = st.multiselect("Region", options=states, placeholder="All regions")
+        with st.container(border=True):
+            region = st.multiselect("Region", options=states, placeholder="All regions")
     with col3:
-        category = st.multiselect("Category", options=categories, placeholder="All categories")
+        with st.container(border=True):
+            category = st.multiselect("Category", options=categories, placeholder="All categories")
     with col4:
-        payment = st.multiselect("Payment method", options=payment_methods, placeholder="All methods")
+        with st.container(border=True):
+            payment = st.multiselect("Payment method", options=payment_methods, placeholder="All methods")
     with col5:
-        status = st.multiselect("Order status", options=statuses, placeholder="All statuses")
+        with st.container(border=True):
+            status = st.multiselect("Order status", options=statuses, placeholder="All statuses")
 
     return {
         "date_range": date_range,

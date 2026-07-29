@@ -1,8 +1,8 @@
 :root {
   /* Colors — from reference dashboard */
-  --bg-primary: #000000;
-  --bg-secondary: #000000;
-  --surface-card: #000000;
+  --bg-primary: #0b0d10;
+  --bg-secondary: #0b0d10;
+  --surface-card: #101319;
   --surface-hover: #1d212a;
   --border-subtle: rgba(255, 255, 255, 0.08);
 
@@ -136,8 +136,8 @@ body, .stApp, .stApp * {
   background-color: #000000 !important;
 }
 .nova-card {
-  background-color: #000000 !important;
-  border: 1px solid #2a2a2a !important;
+  background-color: #101319 !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
 }
 
 .block-container {
@@ -149,11 +149,290 @@ body, .stApp, .stApp * {
 body, .stApp, .stApp * {
   color: #ffffff !important;
 }
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stSidebar"], [data-testid="stHeader"] {
+.stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
   background-color: #000000 !important;
 }
 
-[data-testid="stVerticalBlockBorderWrapper"] {
-  border-color: rgba(255,255,255,0.15) !important;
+[data-testid="stSidebar"] {
+  background-color: #000000 !important;
+}
+
+.st-emotion-cache-rq5xe0 {
+  background-color: #101319 !important;
   border-radius: 14px !important;
+}
+
+/* Force sidebar to a fixed, narrower width */
+section[data-testid="stSidebar"] {
+  min-width: 240px !important;
+  max-width: 240px !important;
+  width: 240px !important;
+}
+
+/* Hide the sidebar collapse/expand toggle button */
+[data-testid="stSidebarCollapseButton"] {
+  display: none !important;
+}
+[data-testid="collapsedControl"] {
+  display: none !important;
+}
+
+/* Force all cards in the same row to stretch to equal height */
+[data-testid="stHorizontalBlock"] {
+  align-items: stretch !important;
+}
+[data-testid="column"] {
+  display: flex !important;
+  flex-direction: column !important;
+}
+[data-testid="column"] > div {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"] > div {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* ==========================================
+   Equal-height dashboard cards
+========================================== */
+
+[data-testid="stHorizontalBlock"] {
+    align-items: stretch !important;
+}
+
+[data-testid="column"] {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+[data-testid="column"] > div {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"] > div {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* ==========================================
+   Global Vertical Spacing
+========================================== */
+
+/* Reduce top whitespace */
+.main .block-container {
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.8rem !important;
+}
+
+/* Page title */
+h1, h2 {
+    margin-bottom: 0.2rem !important;
+}
+
+/* Captions */
+[data-testid="stCaptionContainer"] {
+    margin-top: -0.25rem !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Remove excessive gaps between elements */
+[data-testid="stVerticalBlock"] {
+    gap: 1rem !important;
+}
+
+/* Less space after horizontal rules */
+hr {
+    margin: 1rem 0 !important;
+}
+
+h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+[data-testid="stCaptionContainer"] {
+    margin: 0 0 0.5rem 0 !important;
+}
+
+[data-testid="stVerticalBlock"] > div {
+    margin-top: 0.35rem !important;
+    margin-bottom: 0.35rem !important;
+}
+
+div[data-testid="stTextInput"] {
+    margin-bottom: 0 !important;
+}
+
+div[data-testid="stTextInput"] > div {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Reduce navbar spacing */
+div[data-testid="stTextInput"] {
+    margin-bottom: -14px !important;
+}
+
+div[data-testid="stTextInput"] input {
+    height: 38px !important;
+}
+
+/* InsightForge sidebar branding */
+[data-testid="stSidebar"] {
+    position: relative;
+}
+[data-testid="stSidebar"]::before {
+    content: "InsightForge";
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 30px 24px 0px 56px;
+}
+[data-testid="stSidebar"]::after {
+    content: "IF";
+    position: absolute;
+    top: 33px;
+    left: 24px;
+    width: 26px;
+    height: 26px;
+    background: #5b93ff;
+    border-radius: 7px;
+    color: #ffffff;;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.5px;
+}
+
+/* Move navigation closer to branding */
+[data-testid="stSidebar"] [data-testid="stSidebarNav"] {
+    transform: translateY(-50px);
+}
+
+/* Tighten Analytics page vertical spacing */
+[data-testid="stCaptionContainer"] {
+  margin-top: 0 !important;
+  margin-bottom: 0.3rem !important;
+}
+h4 {
+  margin-bottom: 0.3rem !important;
+}
+[data-testid="stVerticalBlock"] {
+  gap: 0.4rem !important;
+}
+hr {
+  margin: 0.5rem 0 !important;
+}
+[data-baseweb="tab-list"] {
+  margin-top: 0 !important;
+  margin-bottom: 0.3rem !important;
+}
+[data-testid="stHorizontalBlock"] {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Make the sidebar a full-height flex column so we can pin the footer */
+section[data-testid="stSidebar"] {
+  height: 100vh !important;
+}
+
+section[data-testid="stSidebar"] > div {
+  min-width: 240px !important;
+  width: 240px !important;
+}
+
+/* Sidebar footer — user account card, pinned to bottom */
+.sidebar-footer {
+  position: absolute;
+  bottom: -470px;
+  left: 0;
+  right: 0;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-footer-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.sidebar-footer-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary) !important;
+}
+
+.sidebar-footer-role {
+  font-size: 11px;
+  color: var(--text-secondary) !important;
+}
+
+.sidebar-footer-icon {
+  color: var(--text-secondary) !important;
+  font-size: 15px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.sidebar-footer-icon:hover {
+  color: var(--text-primary) !important;
+}
+
+.sidebar-version {
+  position: absolute;
+  bottom: 16px;
+  right: 20px;
+  font-size: 10px;
+  color: var(--text-muted) !important;
+}
+
+.sidebar-footer-icon-link {
+  text-decoration: none !important;
+  display: flex;
+  align-items: center;
 }

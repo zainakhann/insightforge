@@ -3,6 +3,7 @@ import streamlit as st
 import plotly.graph_objects as go
 from components.navbar import render_navbar
 from components.filters import render_global_filters, apply_filters
+from components.page_layout import page_layout
 from components.charts import (
     area_chart, donut_chart, bar_chart, bar_chart_horizontal,
     heatmap_chart, treemap_chart, scatter_chart,
@@ -20,8 +21,10 @@ from utils.dashboard_data import regional_sales_geo
 from components.charts import geo_scatter_chart
 
 render_navbar()
-st.markdown("## Analytics")
-st.caption("Deep exploration across sales, customers, products, payments, reviews, and geography.")
+page_layout(
+    "Analytics",
+    "Deep exploration across sales, customers, products, payments, reviews, and geography."
+)
 
 df_all = load_orders()
 reviews = load_reviews()
@@ -30,14 +33,16 @@ st.markdown("#### Filters")
 
 default_months = st.session_state.get("settings_default_range_months", 24)
 filters = render_global_filters(df_all, default_months_back=default_months)
-st.caption(f"Date range defaults to the last {default_months} months, per your Settings preference — adjust anytime below.")
 df = apply_filters(df_all, filters)
 
 if df.empty:
     st.warning("No data matches the current filters. Try widening your selection.")
     st.stop()
 
-st.caption(f"Showing {df['order_id'].nunique():,} orders matching current filters.")
+st.caption(
+    f"Date range defaults to the last {default_months} months, per your Settings preference — adjust anytime below. "
+    f"Showing {df['order_id'].nunique():,} orders matching current filters."
+)
 st.markdown("---")
 
 tab_sales, tab_customers, tab_products, tab_payments, tab_reviews, tab_geo = st.tabs(
@@ -80,7 +85,11 @@ with tab_customers:
                 fig.add_trace(go.Bar(x=pivot["order_month"], y=pivot["New"], name="New", marker_color="#2f7bf5"))
             if "Returning" in pivot.columns:
                 fig.add_trace(go.Bar(x=pivot["order_month"], y=pivot["Returning"], name="Returning", marker_color="#2ecc71"))
-            fig.update_layout(template="nova", height=340, barmode="stack")
+            fig.update_layout(
+    template="nova",
+    height=320,
+    barmode="stack",
+)
 
             st.plotly_chart(fig, width='stretch', key="customers_new_vs_returning")
     with c2:

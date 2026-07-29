@@ -1,21 +1,27 @@
 import streamlit as st
 from components.navbar import render_navbar
 from components.charts import forecast_chart
+from components.page_layout import page_layout
 from utils.dashboard_data import load_orders
 from utils.forecast_cache import cached_revenue_forecast, cached_sales_forecast
 
 render_navbar()
-st.markdown("## Forecasting")
-st.caption("Machine learning forecasts for revenue and category-level sales, with confidence intervals.")
+page_layout(
+    "Forecasting",
+    "Your forecasting subtitle here."
+)
 
 df = load_orders()
 
 horizon = st.slider("Forecast horizon (months)", min_value=3, max_value=12, value=6, key="forecast_horizon")
 
-tab_revenue, tab_sales = st.tabs(["Revenue Forecast", "Sales Forecast"])
+forecast_view = st.radio(
+    "Forecast type", options=["Revenue Forecast", "Sales Forecast"],
+    horizontal=True, label_visibility="collapsed",
+)
 
 # ---------- REVENUE FORECAST ----------
-with tab_revenue:
+if forecast_view == "Revenue Forecast":
     try:
         historical, forecast, metrics = cached_revenue_forecast(df, horizon)
 
@@ -43,7 +49,7 @@ with tab_revenue:
         st.warning(str(e))
 
 # ---------- SALES FORECAST ----------
-with tab_sales:
+if forecast_view == "Sales Forecast":
     category = st.selectbox(
         "Category",
         options=sorted(df["nova_category"].dropna().unique()),
