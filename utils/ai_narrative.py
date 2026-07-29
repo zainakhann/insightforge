@@ -55,7 +55,7 @@ Executive summary paragraph:"""
 
     try:
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-2.5-flash-lite",
             contents=prompt,
             config=genai.types.GenerateContentConfig(temperature=1.1),
         )
@@ -101,7 +101,7 @@ Answer:"""
 
     try:
         response = client.models.generate_content(
-            model="gemini-flash-latest",
+            model="gemini-2.5-flash-lite",
             contents=prompt,
         )
         return response.text.strip()
