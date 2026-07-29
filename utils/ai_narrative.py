@@ -53,16 +53,21 @@ Facts:
 
 Executive summary paragraph:"""
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
-            contents=prompt,
-            config=genai.types.GenerateContentConfig(temperature=1.1),
-        )
-        return response.text.strip()
-    except Exception as e:
-        st.session_state["_gemini_error"] = str(e)
-        return None
+    candidate_models = ["gemini-3.1-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.6-flash"]
+    last_error = None
+    for model_name in candidate_models:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=genai.types.GenerateContentConfig(temperature=1.1),
+            )
+            return response.text.strip()
+        except Exception as e:
+            last_error = e
+            continue
+    st.session_state["_gemini_error"] = str(last_error)
+    return None
 
 def answer_question(question: str, insights: list, kpis: dict) -> str:
     """
@@ -99,11 +104,16 @@ User question: {question}
 
 Answer:"""
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
-            contents=prompt,
-        )
-        return response.text.strip()
-    except Exception as e:
-        return f"__ERROR__{str(e)}"
+    candidate_models = ["gemini-3.1-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.6-flash"]
+    last_error = None
+    for model_name in candidate_models:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+            )
+            return response.text.strip()
+        except Exception as e:
+            last_error = e
+            continue
+    return f"__ERROR__{str(last_error)}"
