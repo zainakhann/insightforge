@@ -89,6 +89,8 @@ with tab_customers:
     template="nova",
     height=320,
     barmode="stack",
+    paper_bgcolor="#101319",
+    plot_bgcolor="#101319",
 )
 
             st.plotly_chart(fig, width='stretch', key="customers_new_vs_returning")

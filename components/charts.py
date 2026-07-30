@@ -36,6 +36,8 @@ NOVA_TEMPLATE = go.layout.Template(
 pio.templates["nova"] = NOVA_TEMPLATE
 pio.templates.default = "nova"
 
+CARD_BG = "#101319"
+
 
 def area_chart(x, y, name="Revenue"):
     fig = go.Figure()
@@ -43,9 +45,10 @@ def area_chart(x, y, name="Revenue"):
         x=x, y=y, mode="lines", name=name,
         line=dict(color="#2f7bf5", width=3),
         fill="tozeroy",
-        fillcolor="rgba(47,123,245,0.25)",
+        fillcolor="rgba(47,123,245,0.12)",
     ))
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
+    fig.update_yaxes(rangemode="tozero")
     return fig
 
 
@@ -66,23 +69,24 @@ def donut_chart(labels, values):
         )
     )])
 
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
 
 
 def bar_chart(x, y, orientation="v"):
     fig = go.Figure(go.Bar(
-    x=x,
-    y=y,
-    orientation=orientation,
-    marker_color="#2f7bf5"
-))
-    fig.update_layout(template="nova", height=320)
+        x=x,
+        y=y,
+        orientation=orientation,
+        marker_color="#2f7bf5"
+    ))
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
+
 
 def bar_chart_horizontal(x, y):
     fig = go.Figure(go.Bar(x=x, y=y, orientation="h"))
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
 
 
@@ -92,15 +96,17 @@ def state_bubble_map(states, values):
     Avoids needing real lat/lon geocoding for a first pass — swap for scattergeo later if desired.
     """
     fig = go.Figure(go.Bar(x=states, y=values, marker_color="#2f7bf5"))
-    fig.update_layout(template="nova", height=320, xaxis_title="Region", yaxis_title="Revenue")
+    fig.update_layout(template="nova", height=320, xaxis_title="Region", yaxis_title="Revenue",
+                       paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
+
 
 def heatmap_chart(x_labels, y_labels, z_matrix, colorscale="Blues"):
     fig = go.Figure(data=go.Heatmap(
         x=x_labels, y=y_labels, z=z_matrix,
         colorscale=colorscale, showscale=True,
     ))
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
 
 
@@ -108,14 +114,15 @@ def treemap_chart(labels, parents, values):
     fig = go.Figure(go.Treemap(
         labels=labels, parents=parents, values=values,
         marker=dict(
-    colorscale=[
-        [0, "#111827"],
-        [0.5, "#2f7bf5"],
-        [1, "#5b8def"]
-    ]
-),
+            colorscale=[
+                [0, "#111827"],
+                [0.5, "#2f7bf5"],
+                [1, "#5b8def"]
+            ]
+        ),
     ))
-    fig.update_layout(template="nova", height=320, margin=dict(t=10, l=10, r=10, b=10))
+    fig.update_layout(template="nova", height=320, margin=dict(t=10, l=10, r=10, b=10),
+                       paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
 
 
@@ -127,25 +134,25 @@ def scatter_chart(x, y, text=None, size=None):
             opacity=0.7, line=dict(width=0),
         ),
     ))
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
+
 
 def forecast_chart(historical_df, forecast_df, y_actual_label="Actual", y_forecast_label="Forecast"):
     fig = go.Figure()
-    # Historical line
     fig.add_trace(go.Scatter(
         x=historical_df["date"], y=historical_df["actual"],
         mode="lines", name=y_actual_label,
         line=dict(color="#2f7bf5", width=3),
     ))
-    # Forecast line
     fig.add_trace(go.Scatter(
         x=forecast_df["date"], y=forecast_df["forecast"],
         mode="lines+markers", name=y_forecast_label,
         line=dict(color="#2ecc71", width=3, dash="dash"),
     ))
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
+
 
 def anomaly_timeline_chart(daily_df):
     fig = go.Figure()
@@ -163,7 +170,7 @@ def anomaly_timeline_chart(daily_df):
         name="Anomaly", marker=dict(color="#ff5c5c", size=9, symbol="x"),
     ))
 
-    fig.update_layout(template="nova", height=320)
+    fig.update_layout(template="nova", height=320, paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig
 
 
@@ -183,8 +190,10 @@ def segment_scatter_chart(rfm_df):
     fig.update_layout(
         template="nova", height=320,
         xaxis_title="Order Frequency", yaxis_title="Total Spend ($)",
+        paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG,
     )
     return fig
+
 
 def geo_scatter_chart(lat, lon, size, hover_labels):
     fig = go.Figure(go.Scattergeo(
@@ -200,10 +209,11 @@ def geo_scatter_chart(lat, lon, size, hover_labels):
     ))
     fig.update_geos(
         scope="south america",
-        showland=True, landcolor="#1d212a",
-        showocean=True, oceancolor="#0d0f14",
+        showland=True, landcolor=CARD_BG,
+        showocean=True, oceancolor=CARD_BG,
         showcountries=True, countrycolor="#333944",
-        bgcolor="rgba(0,0,0,0)",
+        bgcolor=CARD_BG,
     )
-    fig.update_layout(template="nova", height=320, margin=dict(l=0, r=0, t=10, b=0))
+    fig.update_layout(template="nova", height=320, margin=dict(l=0, r=0, t=10, b=0),
+                       paper_bgcolor=CARD_BG, plot_bgcolor=CARD_BG)
     return fig

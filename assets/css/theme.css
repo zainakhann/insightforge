@@ -436,3 +436,20 @@ section[data-testid="stSidebar"] > div {
   display: flex;
   align-items: center;
 }
+
+[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlockBorderWrapper"] > div {
+  background-color: #101319 !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  border-radius: 14px !important;
+}
+
+[data-testid="stFullScreenFrame"] {
+  background: transparent !important;
+}
+[data-testid="stFullScreenFrame"] > div {
+  background: transparent !important;
+}
+[data-testid="stElementContainer"]:has(.js-plotly-plot) {
+  background: transparent !important;
+}
