@@ -57,19 +57,19 @@ with tab_sales:
             st.markdown("##### Revenue Over Time")
             trend = revenue_over_time(df)
             st.plotly_chart(area_chart(trend["order_month"], trend["payment_value"]),
-                              width='stretch', key="sales_revenue_trend")
+                              width='stretch', key="sales_revenue_trend", theme=None)
     with c2:
         with st.container(border=True):
             st.markdown("##### Sales by Category")
             cat = sales_by_category(df)
             st.plotly_chart(donut_chart(cat["nova_category"], cat["payment_value"]),
-                              width='stretch', key="sales_category_donut")
+                              width='stretch', key="sales_category_donut", theme=None)
 
     with st.container(border=True):
         st.markdown("##### Order Volume — Day × Hour")
         hours, days, z = order_volume_heatmap(df)
         st.plotly_chart(heatmap_chart(hours, days, z),
-                          width='stretch', key="sales_volume_heatmap")
+                          width='stretch', key="sales_volume_heatmap", theme=None)
 
 # ---------- CUSTOMERS ----------
 with tab_customers:
@@ -86,20 +86,20 @@ with tab_customers:
             if "Returning" in pivot.columns:
                 fig.add_trace(go.Bar(x=pivot["order_month"], y=pivot["Returning"], name="Returning", marker_color="#2ecc71"))
             fig.update_layout(
-    template="nova",
-    height=320,
-    barmode="stack",
-    paper_bgcolor="#101319",
-    plot_bgcolor="#101319",
-)
+                template="nova",
+                height=320,
+                barmode="stack",
+                paper_bgcolor="#101319",
+                plot_bgcolor="#101319",
+            )
 
-            st.plotly_chart(fig, width='stretch', key="customers_new_vs_returning")
+            st.plotly_chart(fig, width='stretch', key="customers_new_vs_returning", theme=None)
     with c2:
         with st.container(border=True):
             st.markdown("##### Customer Lifetime Value Distribution")
             ltv = customer_ltv_distribution(df)
             st.plotly_chart(scatter_chart(ltv["order_count"], ltv["total_spent"]),
-                              width='stretch', key="customers_ltv_scatter")
+                              width='stretch', key="customers_ltv_scatter", theme=None)
 
     with st.container(border=True):
         st.markdown("##### Customer Table")
@@ -113,18 +113,18 @@ with tab_products:
             st.markdown("##### Top Performing Categories")
             top, bottom = top_bottom_categories(df)
             st.plotly_chart(bar_chart_horizontal(top["payment_value"], top["nova_category"]),
-                              width='stretch', key="products_top_categories")
+                              width='stretch', key="products_top_categories", theme=None)
     with c2:
         with st.container(border=True):
             st.markdown("##### Bottom Performing Categories")
             st.plotly_chart(bar_chart_horizontal(bottom["payment_value"], bottom["nova_category"]),
-                              width='stretch', key="products_bottom_categories")
+                              width='stretch', key="products_bottom_categories", theme=None)
 
     with st.container(border=True):
         st.markdown("##### Category Breakdown (Treemap)")
         labels, parents, values = category_treemap_data(df)
         st.plotly_chart(treemap_chart(labels, parents, values),
-                          width='stretch', key="products_treemap")
+                          width='stretch', key="products_treemap", theme=None)
 
     with st.container(border=True):
         st.markdown("##### Product Table")
@@ -138,13 +138,13 @@ with tab_payments:
             st.markdown("##### Payment Method Breakdown")
             pm = payment_method_breakdown(df)
             st.plotly_chart(donut_chart(pm["payment_type"], pm["orders"]),
-                              width='stretch', key="payments_method_donut")
+                              width='stretch', key="payments_method_donut", theme=None)
     with c2:
         with st.container(border=True):
             st.markdown("##### Installments Analysis")
             inst = installments_breakdown(df)
             st.plotly_chart(bar_chart(inst["payment_installments"], inst["orders"]),
-                              width='stretch', key="payments_installments_bar")
+                              width='stretch', key="payments_installments_bar", theme=None)
 
 # ---------- REVIEWS ----------
 with tab_reviews:
@@ -154,13 +154,13 @@ with tab_reviews:
             st.markdown("##### Review Score Distribution")
             dist = review_score_distribution(df, reviews)
             st.plotly_chart(bar_chart(dist["review_score"], dist["count"]),
-                              width='stretch', key="reviews_score_bar")
+                              width='stretch', key="reviews_score_bar", theme=None)
     with c2:
         with st.container(border=True):
             st.markdown("##### Review Score Trend")
             trend2 = review_score_trend(df, reviews)
             st.plotly_chart(area_chart(trend2["order_month"], trend2["review_score"], "Avg Score"),
-                              width='stretch', key="reviews_score_trend")
+                              width='stretch', key="reviews_score_trend", theme=None)
 
 # ---------- GEOGRAPHY ----------
 with tab_geo:
@@ -172,11 +172,11 @@ with tab_geo:
             hover_text = [f"{row.customer_state}: ${row.payment_value:,.0f}" for row in region_geo.itertuples()]
             st.plotly_chart(
                 geo_scatter_chart(region_geo["lat"], region_geo["lon"], region_geo["payment_value"], hover_text),
-                width='stretch', key="geo_sales_map",
+                width='stretch', key="geo_sales_map", theme=None,
             )
     with c2:
         with st.container(border=True):
             st.markdown("##### Avg Delivery Time by Region")
             delivery = delivery_time_by_region(df).head(15)
             st.plotly_chart(bar_chart_horizontal(delivery["delivery_days"], delivery["customer_state"]),
-                              width='stretch', key="geo_delivery_by_region")
+                              width='stretch', key="geo_delivery_by_region", theme=None)

@@ -28,7 +28,7 @@ if forecast_view == "Revenue Forecast":
         with st.container(border=True):
             st.plotly_chart(
                 forecast_chart(historical, forecast, "Historical Revenue", "Forecasted Revenue"),
-                width='stretch', key="revenue_forecast_chart",
+                width='stretch', key="revenue_forecast_chart", theme=None,
             )
 
         m1, m2, m3 = st.columns(3)
@@ -62,7 +62,7 @@ if forecast_view == "Sales Forecast":
         with st.container(border=True):
             st.plotly_chart(
                 forecast_chart(historical, forecast, f"Historical {category} Orders", f"Forecasted {category} Orders"),
-                width='stretch', key="sales_forecast_chart",
+                width='stretch', key="sales_forecast_chart", theme=None,
             )
 
         m1, m2, m3 = st.columns(3)
