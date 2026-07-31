@@ -453,3 +453,7 @@ section[data-testid="stSidebar"] > div {
 [data-testid="stElementContainer"]:has(.js-plotly-plot) {
   background: transparent !important;
 }
+
+.st-emotion-cache-13k62yr {
+  background: #101319 !important;
+}
