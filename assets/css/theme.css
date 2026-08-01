@@ -437,12 +437,7 @@ section[data-testid="stSidebar"] > div {
   align-items: center;
 }
 
-[data-testid="stVerticalBlockBorderWrapper"],
-[data-testid="stVerticalBlockBorderWrapper"] > div {
-  background-color: #101319 !important;
-  border: 1px solid rgba(255,255,255,0.15) !important;
-  border-radius: 14px !important;
-}
+
 
 [data-testid="stFullScreenFrame"] {
   background: transparent !important;
@@ -456,4 +451,28 @@ section[data-testid="stSidebar"] > div {
 
 .st-emotion-cache-13k62yr {
   background: #101319 !important;
+}
+
+div[data-testid="stElementContainer"] div[data-testid="stFullScreenFrame"] {
+  background-color: #101319 !important;
+}
+div[data-testid="stElementContainer"] div[data-testid="stFullScreenFrame"] > div {
+  background-color: #101319 !important;
+}
+div[data-testid="stElementContainer"] div[data-testid="stFullScreenFrame"] div[class*="stPlotlyChart"] {
+  background-color: #101319 !important;
+}
+
+/* Hide the fullscreen-expand button on charts (also removes the backdrop that causes the black patch) */
+[data-testid="StyledFullScreenButton"] {
+  display: none !important;
+}
+button[title="View fullscreen"] {
+  display: none !important;
+}
+
+[data-testid="stLayoutWrapper"] > [data-testid="stVerticalBlock"] {
+  background-color: #101319 !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
 }
